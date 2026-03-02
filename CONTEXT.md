@@ -241,6 +241,51 @@ Critical for achieving a dDrum-like, non-mechanical feel.
 
 ---
 
+## Implementation Roadmap (Step-by-Step)
+
+High-level sequence for building the app, focusing on one task at a time.
+
+1. **Refactor into a package skeleton**
+   - Create `midi_generator/` package with `core`, `theory`, `instruments`, `humanization`, `midi`, `db`, and `cli` submodules.
+   - Move minimal orchestration logic from `generator.py` into `midi_generator/cli/main.py`, keeping `generator.py` as a thin entrypoint.
+
+2. **Define shared types and configuration**
+   - Add `midi_generator/core/types.py` with dataclasses for `Note`, `Pattern`, `Preset`, and `GenerationRequest`.
+   - Add `midi_generator/config/settings.py` for constants (PPQ, default BPM, supported genres/scales/moods, GM mappings).
+
+3. **Implement theory layer**
+   - Implement `scales.py`, `chords.py`, and `progressions.py` to encapsulate all scale and chord logic, plus genre/mood-based progression templates.
+
+4. **Implement instrument generators**
+   - Implement `chords.py`, `melody.py`, `bass.py`, and `drums.py` in `midi_generator/instruments/` using the theory layer and types.
+   - Ensure each instrument generator consumes a `Preset` + RNG seed and emits `Pattern` objects.
+
+5. **Implement humanization and groove layer**
+   - Implement `timing.py`, `velocity.py`, and `groove_templates.py` in `midi_generator/humanization/`.
+   - Apply timing jitter, velocity variance, swing, and optional groove templates to `Pattern` objects.
+
+6. **Implement MIDI mapping and writer**
+   - Implement `midi_generator/midi/mapping.py` for GM mappings and drum note constants.
+   - Implement `midi_generator/midi/writer.py` using `mido` or `pretty_midi` to export individual and combined `.mid` files from `Pattern` objects.
+
+7. **Add persistence layer**
+   - Implement `midi_generator/db/schema.sql` from the database schema above.
+   - Implement `midi_generator/db/models.py` for basic CRUD on presets, generations, patterns, notes, and grooves.
+
+8. **Wire everything in the core generator**
+   - Implement `midi_generator/core/generator.py` to coordinate: parse preset → generate patterns → humanize → write MIDI → persist metadata.
+   - Update `cli/main.py` to translate CLI args into a `Preset` and call the core generator.
+
+9. **Testing and validation**
+   - Add unit tests in `tests/` for theory, instruments, humanization, and MIDI export.
+   - Add an end-to-end test that runs the CLI and asserts that valid `.mid` files are created.
+
+10. **Optional UI / advanced features**
+    - Add desktop or web UI on top of the CLI.
+    - Implement groove extraction from reference MIDI and pattern mutation controls.
+
+---
+
 ## Database Schema
 
 Relational schema designed for PostgreSQL (or SQLite for local use). Focus is on reproducible generations, presets, and detailed note-level storage.

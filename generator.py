@@ -472,7 +472,7 @@ def parse_time_signature(ts: str) -> Tuple[int, int]:
         raise ValueError(f"Invalid time signature: {ts}") from exc
 
 
-def main() -> None:
+def legacy_main() -> None:
     parser = argparse.ArgumentParser(description="DAW-independent MIDI and drum pattern generator")
     parser.add_argument("--genre", default="trap", choices=sorted(PROGRESSION_PRESETS.keys()))
     parser.add_argument("--scale", default="minor", choices=sorted(SCALES.keys()))
@@ -537,4 +537,8 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    # Keep the original CLI working while gradually moving logic into
+    # `midi_generator.cli.main`.
+    from midi_generator.cli import main as cli_main
+
+    cli_main()
