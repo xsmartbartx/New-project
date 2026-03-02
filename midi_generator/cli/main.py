@@ -8,12 +8,12 @@ the `midi_generator` package.
 
 from __future__ import annotations
 
-from .. import legacy_main
+import generator
 
 
 def main() -> None:
     """Delegate to the legacy top-level main function."""
-    legacy_main()
+    generator.legacy_main()
 
 
 __all__ = ["main"]
