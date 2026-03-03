@@ -318,10 +318,12 @@ High-level sequence for building the app, focusing on **one task at a time**, wi
      - [x] Assert `.mid` files exist (including `combined.mid`).
 
 10. **Optional UI / advanced features**
-   - [ ] UI shell (desktop/web) that calls the same core generator.
-   - [ ] Pattern mutation:
+   - [x] UI shell (desktop) that calls the same core generator.
+     - [x] `ui.py` root launcher.
+     - [x] `midi_generator/ui/qt_app.py` PySide6 window with musical + groove controls.
+   - [ ] Pattern mutation (future):
      - [ ] Keep harmonic structure stable while mutating rhythm/ornaments.
-   - [ ] Groove extraction:
+   - [ ] Groove extraction (future):
      - [ ] Load reference MIDI.
      - [ ] Learn timing/velocity profile.
      - [ ] Apply learned groove to generated patterns.
