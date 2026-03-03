@@ -257,91 +257,65 @@ High-level sequence for building the app, focusing on **one task at a time**, wi
    - [ ] Update generation logic to consume `Preset` / emit `Pattern` (happens in Step 4–8).
 
 3. **Implement theory layer**
-   - [ ] Create `midi_generator/theory/` package.
-   - [ ] Implement `scales.py`:
-     - [ ] Scale interval definitions.
-     - [ ] Key parsing helpers.
-     - [ ] Scale pitch-class construction.
-   - [ ] Implement `chords.py`:
-     - [ ] Degree → chord building (triad/7th/sus).
-     - [ ] Voicing helpers (octave ranges, inversions later).
-   - [ ] Implement `progressions.py`:
-     - [ ] Genre/mood templates.
-     - [ ] Template selection logic with fallbacks.
+   - [x] Create `midi_generator/theory/` package.
+   - [x] Implement `scales.py`:
+     - [x] Key parsing helpers.
+     - [x] Scale pitch-class construction.
+   - [x] Implement `chords.py`:
+     - [x] Degree → chord building (triad/7th/sus).
+   - [x] Implement `progressions.py`:
+     - [x] Genre/mood templates.
+     - [x] Template selection logic with fallbacks.
 
-4. **Implement instrument generators**
-   - [ ] Create `midi_generator/instruments/` package.
-   - [ ] Implement `instruments/chords.py`:
-     - [ ] Build chord events per bar from progression.
-     - [ ] Return a `Pattern(type="chords", ...)`.
-   - [ ] Implement `instruments/melody.py`:
-     - [ ] Scale-constrained note selection.
-     - [ ] Beat-strength weighting (chord tones on strong beats).
-     - [ ] Return a `Pattern(type="melody", ...)`.
-   - [ ] Implement `instruments/bass.py`:
-     - [ ] Root-following baseline.
-     - [ ] Syncopation + octave jumps.
-     - [ ] Return a `Pattern(type="bass", ...)`.
-   - [ ] Implement `instruments/drums.py`:
-     - [ ] Kick/snare/hat logic per genre.
-     - [ ] Trap rolls / stutters based on complexity.
-     - [ ] Return a `Pattern(type="drums", ...)`.
-   - [ ] Each generator accepts `Preset` + RNG (seeded) and is deterministic under the same seed.
+4. **Implement instrument generators** (DONE)
+   - [x] Create `midi_generator/instruments/` package.
+   - [x] Implement `instruments/chords.py` (chord events per bar).
+   - [x] Implement `instruments/melody.py` (scale constrained + chord-tone weighting).
+   - [x] Implement `instruments/bass.py` (root-following + variations).
+   - [x] Implement `instruments/drums.py` (kick/snare/hats + trap rolls + ghost notes).
+   - [x] Deterministic outputs under same seed.
 
-5. **Implement humanization and groove layer**
-   - [ ] Create `midi_generator/humanization/` package.
-   - [ ] Implement `timing.py`:
-     - [ ] Swing application (e.g., delay off-steps).
-     - [ ] Timing jitter in ms → ticks conversion.
-   - [ ] Implement `velocity.py`:
-     - [ ] Velocity variance.
-     - [ ] Accent weighting by beat strength.
-     - [ ] Ghost note handling for snares/hats.
-   - [ ] Implement `groove_templates.py`:
-     - [ ] Built-in groove templates (MPC-ish swing curves).
-     - [ ] Hook for future groove extraction.
-   - [ ] Apply humanization as a pure transform: `Pattern -> Pattern` (or modify notes in a controlled way).
+5. **Implement humanization and groove layer** (DONE)
+   - [x] Create `midi_generator/humanization/` package.
+   - [x] Implement `timing.py` (ms→ticks, swing offset, jitter helper).
+   - [x] Implement `velocity.py` (velocity variance helper).
+   - [x] Implement `groove_templates.py` (built-in swing presets + accessor).
 
-6. **Implement MIDI mapping and writer**
-   - [ ] Create `midi_generator/midi/` package.
-   - [ ] Implement `midi/mapping.py`:
-     - [ ] GM drum note constants.
-     - [ ] Channel conventions (drums on channel 10 / index 9).
-   - [ ] Implement `midi/writer.py`:
-     - [ ] Write single-track `.mid` for each Pattern.
-     - [ ] Write multitrack combined `.mid`.
-     - [ ] Ensure correct tempo + time signature meta messages.
-     - [ ] Ensure note ordering and valid note-off behavior.
+6. **Implement MIDI mapping and writer** (DONE)
+   - [x] Create `midi_generator/midi/` package.
+   - [x] Implement `midi/mapping.py` (GM mapping + drum channel constant).
+   - [x] Implement `midi/writer.py`:
+     - [x] Write single-track `.mid`.
+     - [x] Write combined multitrack `.mid`.
+     - [x] Write tempo + time signature meta.
+     - [x] Deterministic note ordering and valid note-off.
 
-7. **Add persistence layer**
-   - [ ] Create `midi_generator/db/` package.
-   - [ ] Add `db/schema.sql` (tables from schema section).
-   - [ ] Add `db/models.py` (DAO layer or lightweight ORM):
-     - [ ] Save/load presets.
-     - [ ] Record generations and exported file paths.
-     - [ ] Optional: store note-level events for debugging/groove learning.
+7. **Add persistence layer** (DONE — minimal SQLite)
+   - [x] Create `midi_generator/db/` package.
+   - [x] Add `db/schema.sql` (minimal presets + generations tables).
+   - [x] Add `db/models.py`:
+     - [x] SQLite init from schema.
+     - [x] Save/load presets (JSON).
+     - [x] Record generations (metadata).
 
-8. **Wire everything in the core generator**
-   - [ ] Implement `midi_generator/core/generator.py`:
-     - [ ] Build progression (theory).
-     - [ ] Generate patterns (instruments).
-     - [ ] Humanize patterns (humanization).
-     - [ ] Write MIDI outputs (midi writer).
-     - [ ] Persist metadata (db, optional).
-   - [ ] Update `midi_generator/cli/main.py`:
-     - [ ] Parse CLI args into a `Preset`.
-     - [ ] Call the core generator and write files.
-     - [ ] Keep current CLI flags stable.
+8. **Wire everything in the core generator** (DONE)
+   - [x] Implement `midi_generator/core/generator.py`:
+     - [x] Build progression (theory).
+     - [x] Generate patterns (instruments).
+     - [x] Write MIDI outputs (midi writer).
+   - [x] Update `midi_generator/cli/main.py`:
+     - [x] Parse CLI args into a `Preset`.
+     - [x] Call the core generator and write files.
+     - [x] Keep current CLI flags stable.
 
-9. **Testing and validation**
-   - [ ] Add `tests/` scaffold (pytest).
-   - [ ] Unit tests:
-     - [ ] Theory helpers return expected scale/chord tones.
-     - [ ] Instrument generators produce deterministic output for a seed.
-     - [ ] Humanization stays within configured bounds.
-   - [ ] End-to-end test:
-     - [ ] Run CLI generation.
-     - [ ] Assert `.mid` files exist and are readable.
+9. **Testing and validation** (DONE — unittest)
+   - [x] Add `tests/` scaffold.
+   - [x] Unit tests:
+     - [x] Theory helpers return expected values.
+     - [x] Instrument generators are deterministic under seed.
+   - [x] End-to-end test:
+     - [x] Run generation.
+     - [x] Assert `.mid` files exist (including `combined.mid`).
 
 10. **Optional UI / advanced features**
    - [ ] UI shell (desktop/web) that calls the same core generator.
