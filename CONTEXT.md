@@ -441,6 +441,7 @@ Target structure for evolving the current single-file `generator.py` into a main
 ```text
 .
 ├── generator.py          # Thin CLI entrypoint (backwards compatible)
+├── ui.py                 # Desktop UI launcher (PySide6)
 ├── requirements.txt
 ├── README.md
 ├── CONTEXT.md
@@ -479,9 +480,16 @@ Target structure for evolving the current single-file `generator.py` into a main
 │   │   ├── schema.sql         # SQL for creating the tables above
 │   │   ├── models.py          # Thin ORM/DAO layer for presets, generations, notes
 │   │   └── migrations/        # Future DB migrations
-│   └── cli/
+│   └── ui/
 │       ├── __init__.py
-│       └── main.py            # Argument parsing and CLI command wiring
+│       └── qt_app.py          # PySide6 desktop UI
+├── plugin/               # JUCE-based plugin project (VST3 / AU)
+│   ├── CMakeLists.txt    # JUCE CMake configuration
+│   └── src/
+│       ├── PluginProcessor.h
+│       ├── PluginProcessor.cpp
+│       ├── PluginEditor.h
+│       └── PluginEditor.cpp
 └── tests/
     ├── __init__.py
     ├── test_theory.py
@@ -494,6 +502,8 @@ Target structure for evolving the current single-file `generator.py` into a main
 Design notes:
 
 - `generator.py` at the project root remains as the entrypoint used in the README, importing `midi_generator.cli.main`.
+- `ui.py` provides a simple desktop control surface that can be run alongside any DAW.
 - `midi_generator/core` coordinates calls to the theory, instruments, humanization, and MIDI layers.
 - `midi_generator/db` encapsulates all persistence concerns so that the CLI and generators remain database-agnostic.
+- `plugin/` hosts a JUCE C++ project compiled into VST3/AU binaries, with installers described in `plugin/README.md`.
 - `tests/` mirrors the package structure to keep unit and integration tests organized.
